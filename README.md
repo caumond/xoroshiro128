@@ -153,7 +153,7 @@ Referencing the alternative algorithm, the authors state:
 
 > "This technique is extremely fast, but _you will be generating half the values you could actually generate._"
 
-As far as I'm aware, neither JavaScript nor Google Closure provide a native/fast way to perform the operations required by the alterative algorithm. Even if this can be implemented somehow in JS, I'm dubious whether any speed advantage over the standard algorithm would survive the implementation details (e.g. juggling strings internally). Without this speed advantage the alternative algorithm is clearly inferior, so in my opinion the implementation effort is simply not justified for JavaScript.
+As far as I'm aware, neither JavaScript nor Google Closure provides a native/fast way to perform the operations required by the alternative algorithm. Even if this can be implemented somehow in JS, I'm dubious whether any speed advantage over the standard algorithm would survive the implementation details (e.g. juggling strings internally). Without this speed advantage the alternative algorithm is clearly inferior, so in my opinion the implementation effort is simply not justified for JavaScript.
 
 ## Performance
 
@@ -259,11 +259,11 @@ Overall the use-cases for xoroshiro128+ in CLJS are not as clear cut as CLJ due 
 I recommend xoroshiro128+ when:
 
 - Seeding the PRNG is important
-- Working with the full range of 64 bit integers (`goog.math.Long`) is acceptible or even important
+- Working with the full range of 64 bit integers (`goog.math.Long`) is acceptable or even important
 - Wanting to work against the `xoroshiro128.prng/IPRNG` protocol
 - Compatibility with another system implementing xoroshiro128+ is important
 
-I recommend `Math.random` when working with an _unseeded_ PRNG with an _undefined algorithm_ outputting only _floats on [0, 1)_ is acceptible.
+I recommend `Math.random` when working with an _unseeded_ PRNG with an _undefined algorithm_ outputting only _floats on [0, 1)_ is acceptable.
 
 ### CLJS optimizations & environment
 
