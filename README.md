@@ -104,6 +104,13 @@ As UUIDs represent 128 bit integers (hexadecimal), they are also supported for c
 
 The current seed value can be extracted as a 128 bit seed vector from both `Xoroshiro128+` and `Splitmix64` type data with the `seed` function.
 
+In synthesis, when you call the `xoroshiro128+` function, you could provide one of the following, in the order of their priority (first is higher priority):
+
+* A `cljc-long.core`
+* A number (as defined with `number?`) 
+* A sequence `[a b]`
+* A `uuid` that will be turned into a seed with the `uuid->seed128` function.
+
 ## Jump function
 
 The Xoroshiro128+ algorithm supports a jump function to easily create new non-overlapping sequences from any starting point.
@@ -269,6 +276,54 @@ Fair warning that changing the browser and CLJS compilation optimisations level 
 xoroshiro128+ and the family of related generators are not cryptographically secure or intended for use in cryptography.
 
 These generators are designed to produce a seedable, statistically uniform distribution at high speeds, with a reasonable period.
+
+## In cljc
+
+You can use xoroshiro in cljc, and it will execute in both Clojure and Clojurescript compilers but read carefully this section if you need to find the exact same values. This could be an objective if:
+
+* You have some cljc tests to write passing both in Clojure and Clojurescript.
+* Your application requires to execute the same randomness on clojure and clojurescript.
+
+### Your seed
+
+When you provide a seed, pay attention to the litteral:
+
+``` clojure
+(def x -2397555347192430356)
+x
+;; clj --> -2397555347192430356
+;; cljs --> -2397555347192430600
+```
+
+To workaround this, you could:
+
+* Choose a different method to provide the seed, like a uuid.
+* Turn this litteral into a string, and build a `cljc-long.core/long` with it.
+``` clojure
+(def seed 
+   (-> "-2397555347192430356"
+       cljc-long.core/long))
+;; clj --> -2397555347192430356
+;; cljs => #object [Long -2397555347192430356]
+```
+
+### Uniform distribution of an Integer
+
+To build a uniform distribution - i.e. a range of integers - you have to turn `x/value` into a range of integers:
+
+```clojure
+(let [r (- max-int min-int)
+      m (-> (xoro/value xoro-object)
+            (cljc-long.core/mod (cljc-long.core/long r))
+            long)]
+   (if (>= m 0) (+ min-int m) (+ min-int r m)))
+```
+
+Note that you need to use `cljc-long.core` for all operations. When modulo is applied, if your range is small enough you can leverage the b
+
+### Uniform distribution of a double
+
+See the [section on double convertion](converting-to-doubles-in-the-unit-interval).
 
 ## License
 
